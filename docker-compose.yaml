@@ -1,11 +1,34 @@
+networks:
+    app:
 services:
-    challenge:
+    php-fpm:
         build:
-            target: php
+            context: ./.docker/php
         volumes:
-            - .:/var/www
+            - ./backend:/app
+        networks:
+            - app
 
     rabbitmq:
-        image: rabbitmq:3-management
-        ports:
-            - 15672:15672
+        image: bitnami/rabbitmq:4.0.3
+        environment:
+            - RABBITMQ_USERNAME=admin
+            - RABBITMQ_PASSWORD=admin
+            - RABBITMQ_MANAGEMENT_ALLOW_WEB_ACCESS=true
+            - RABBITMQ_NODE_NAME=app
+        depends_on:
+            - php-fpm
+        networks:
+            - app
+
+    supervisor:
+        build:
+            context: ./.docker/supervisor
+        depends_on:
+            - rabbitmq
+        volumes:
+            - ./backend:/app
+            - ./.docker/supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+            - ./.docker/supervisor/logs:/var/log/supervisor
+        networks:
+            - app
