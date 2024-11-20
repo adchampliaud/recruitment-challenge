@@ -1,0 +1,18 @@
+framework:
+    messenger:
+        failure_transport: failed
+        transports:
+            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            async:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%/async'
+                options:
+                    connect_timeout: 0.1
+            failed: '%env(MESSENGER_TRANSPORT_DSN)%/failed'
+        routing:
+            'App\Infrastructure\Message\AsyncMessageInterface': async
+
+when@test:
+    framework:
+        messenger:
+            transports:
+                async: 'in-memory://'
