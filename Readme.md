@@ -63,3 +63,82 @@ Ne voyez pas cela seulement comme un test, mais comme une occasion de partager v
 Soyez assurés que nous recherchons plus qu’une solution fonctionnelle ; nous cherchons à comprendre votre approche, votre manière de penser et la façon dont vous relevez les défis.
 
 Nous vous remercions d’avance pour votre engagement et pour jouer le jeu avec sérieux et créativité.
+
+# Getting Started
+## Requirements
+
+- Linux distribution
+- Docker version 27.3.1
+- [just](https://github.com/casey/just)
+
+### Installation
+
+- In root folder type :
+```
+just setup-app
+```
+
+### Usage
+- In root folder type following command to see all commands available in project :
+```
+just
+```
+- For test workflow use this command :
+```
+just send-code-country {CODE_COUNTRY}
+```
+
+### Explications
+
+#### Symfony
+Le framework symfony est tout à fait adapté au besoin demandé grâce à sa librairie messenger il permet de mettre en place facilement et de façon solide une architecture asynchrone.
+
+#### Architecture
+Je suis partie sur une architecture hexagonal même si cela ne serait pas nécessaire pour le besoin ça permet de facilement isoler les responsabilités.
+
+#### Psalm et Cs fixer
+C'est les deux outils que j'ai l'habitude d'utiliser pour l'analyse statique et l'uniformisation du code. Avec du temps, j'essayerais phpStan.
+
+#### Phpunit
+Je n'ai pas pu mettre la dernière version de phpunit à cause de psalm.
+Les deux librairie partage un paquet avec des prérequis de versions non compatibles.
+
+#### Tests 
+J'ai volontairement pas mis de tests sur l'ensembles des services pour plusieurs raisons.
+
+Au vue de la simplicité du projet, les services les plus critiques sont testés.
+
+Pour faire un test sur ApiClient, il aurait fallu mocker HttpClientInterface qui n'est pas le plus simple à mocker.
+
+En outre, je considère que rajouter trop de mock dans les tests perd l'intérêt du test, on ne test plus vraiment ce qu'on test.
+
+#### CI/CD
+A titre personnel, je suis plus familier avec la ci de gitlab mais elle est moins accessible à ma connaissance lorsque l'on a pas ses propres runners.
+
+#### Docker
+J'ai fait le choix de passer par les images bitnami qui sont plus simples à mettre en place et demande moins de configuration.
+
+Elles sont en root et pose moins de problèmes de gestion de droit de fichiers.
+
+#### Just vs Makefile
+Je trouve que Just est plus adapté que les makeFile dans l'utilisation que l'on en fait. 
+
+Il rend son fichier de commande plus digeste et la syntaxe est plus lisible selon moi.
+
+#### Supervisor
+Supervisor est tout à fait pertinent dans la gestion des workers, il donne plus de contrôle que de passer par des cron.
+
+#### RabbitMQ / Messenger
+J'ai fait le choix de mettre les deux messages sur une seule queue rabbit.
+
+Avec messenger c'est très simple de scaler si le nombre de messages devenait important.
+
+Si à l'utilisation l'un des messages devenait trop lent (Ex. si l'api répondait avec un temps beaucoup plus long sur l'un des deux endpoint) la question d'isoler ce dernier sur une queue dédiée est assez simple à faire.
+
+### Conclusions
+J'ai passer environ une journée pour réaliser cet exercice. 
+Si j'avais eu plus de temps j'aurais rajouter les éléments suivants :
+- Du cache avec redis pour limiter les appels à l'api afin d'accélérer les traitements et limiter la charge serveur.
+- Un endpoint en rest avec un serveur nginx afin de pouvoir envoyer des codes country.
+- Sauvegarde en base des résultats et endpoint pour récupérer le résultat
+
