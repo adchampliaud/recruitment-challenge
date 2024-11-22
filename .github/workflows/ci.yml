@@ -1,0 +1,34 @@
+name: Tests
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+            # 1. Checkout the repository
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            # 2. Install dependencies (Docker, Just, etc.)
+            - name: Install Just
+              uses: extractions/setup-just@v2
+
+            # 3. Build Docker containers (if using Docker Compose)
+            - name: Build and start Docker containers
+              run: just dev-up
+
+            # 4. Wait for services to be ready
+            - name: Wait for services to be ready
+              run: sleep 30
+
+            # 6. Run tests using Just
+            - name: Run tests using Just
+              run: just tests
