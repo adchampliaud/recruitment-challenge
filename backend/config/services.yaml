@@ -22,3 +22,27 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Core\Application\:
+        resource: '%kernel.project_dir%/src/Core/Application/**/*Handler.php'
+        autoconfigure: false
+        tags: [{ name: messenger.message_handler}]
+
+when@test:
+    services:
+        _defaults:
+            public: true
+            autowire: true      # Automatically injects dependencies in your services.
+            autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+        App\Core\Application\Capital\CapitalServiceInterface:
+            class: App\Core\Application\Capital\CapitalService
+            public: true
+
+        App\Infrastructure\CapitalApi\CapitalApiInterface:
+            class: App\Infrastructure\CapitalApi\RestCountries
+            public: true
+
+        App\Infrastructure\ApiClient\ApiClientInterface:
+            class: App\Infrastructure\ApiClient\ApiClient
+            public: true
